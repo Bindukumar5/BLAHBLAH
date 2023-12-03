@@ -1,0 +1,29 @@
+OS1. Let the parent fork and let the child execute ls command with exec. Observe the result with and
+without having wait() system call in the parent.
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <sys/wait.h>
+int main() {
+ pid_t pid = fork(); // Create a child process
+ if (pid < 0) {
+ // Fork failed
+ perror("Fork failed");
+ exit(EXIT_FAILURE);
+ } else if (pid == 0) {
+ // Child process
+ printf("Child process executing ls command:\n");
+ execl("/bin/ls", "ls", (char *)NULL); // Execute ls command
+ perror("execl failed"); // This line will be reached only if execl fails
+ exit(EXIT_FAILURE);
+ } else {
+ // Parent process
+ printf("Parent process waiting for the child to finish (without wait system call)\n");
+ // Note: Uncommenting the line below will make the parent wait for the child
+ // wait(NULL);
+ printf("Parent process continuing without waiting\n");
+ }
+ return 0;
+}
+
+

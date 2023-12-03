@@ -1,0 +1,122 @@
+10. WAP to create and delete a node from a binary Search tree. Traverse the BST using Level Order
+Traversing Technique.
+#include <stdio.h>
+#include <stdlib.h>
+// Structure to represent a node in the binary search tree
+struct TreeNode {
+ int data;
+ struct TreeNode* left;
+ struct TreeNode* right;
+};
+// Function to create a new node with the given data
+struct TreeNode* createNode(int data) {
+ struct TreeNode* newNode = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+ newNode->data = data;
+ newNode->left = NULL;
+ newNode->right = NULL;
+ return newNode;
+}
+// Function to insert a node into the binary search tree
+struct TreeNode* insertNode(struct TreeNode* root, int data) {
+ if (root == NULL) {
+ return createNode(data);
+ }
+ if (data < root->data) {
+ root->left = insertNode(root->left, data);
+ } else if (data > root->data) {
+ root->right = insertNode(root->right, data);
+ }
+ return root;
+}
+// Function to find the node with the minimum value in a BST
+struct TreeNode* findMinNode(struct TreeNode* node) {
+ while (node->left != NULL) {
+ node = node->left;
+ }
+ return node;
+}
+// Function to delete a node with a given key from the binary search tree
+struct TreeNode* deleteNode(struct TreeNode* root, int key) {
+ if (root == NULL) {
+ return root;
+ }
+ if (key < root->data) {
+ root->left = deleteNode(root->left, key);
+ } else if (key > root->data) {
+ root->right = deleteNode(root->right, key);
+ } else {
+ // Node with only one child or no child
+ if (root->left == NULL) {
+ struct TreeNode* temp = root->right;
+ free(root);
+ return temp;
+ } else if (root->right == NULL) {
+ struct TreeNode* temp = root->left;
+ free(root);
+ return temp;
+ }
+ // Node with two children, get the inorder successor (smallest in the right subtree)
+ struct TreeNode* temp = findMinNode(root->right);
+ // Copy the inorder successor's data to this node
+ root->data = temp->data;
+ // Delete the inorder successor
+ root->right = deleteNode(root->right, temp->data);
+ }
+ return root;
+}
+// Function to perform Level Order Traversal of a binary search tree
+void levelOrderTraversal(struct TreeNode* root) {
+ if (root == NULL) {
+ return;
+ }
+ // Use a queue for Level Order Traversal
+ struct TreeNode* queue[100];
+ int front = -1, rear = -1;
+ queue[++rear] = root;
+ while (front != rear) {
+ struct TreeNode* current = queue[++front];
+ printf("%d ", current->data);
+ if (current->left != NULL) {
+ queue[++rear] = current->left;
+ }
+ if (current->right != NULL) {
+ queue[++rear] = current->right;
+ }
+ }
+}
+// Function to free memory allocated for the binary search tree
+void freeBST(struct TreeNode* root) {
+ if (root == NULL) {
+ return;
+ }
+ freeBST(root->left);
+ freeBST(root->right);
+ free(root);
+}
+int main() {
+ // Create a binary search tree
+ struct TreeNode* root = NULL;
+ root = insertNode(root, 50);
+ insertNode(root, 30);
+ insertNode(root, 70);
+ insertNode(root, 20);
+ insertNode(root, 40);
+ insertNode(root, 60);
+ insertNode(root, 80);
+ // Display Level Order Traversal of the binary search tree
+ printf("Level Order Traversal: ");
+ levelOrderTraversal(root);
+ printf("\n");
+ // Delete a node with a given key (e.g., delete node with key 30)
+ int keyToDelete = 30;
+ root = deleteNode(root, keyToDelete);
+ // Display Level Order Traversal after deletion
+ printf("Level Order Traversal after deleting %d: ", keyToDelete);
+ levelOrderTraversal(root);
+ printf("\n");
+ // Free memory allocated for the binary search tree
+ freeBST(root);
+ return 0;
+}
+
+

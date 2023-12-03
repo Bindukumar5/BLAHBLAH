@@ -1,0 +1,95 @@
+1. Write a program to insert N employee information into the Linked List.
+a. Write a function to Search an Employee and display his details.
+b. Display the Average salary of all the Employees with designation Manager.
+
+
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+// Define the Employee structure
+struct Employee {
+char name[50];
+char designation[50];
+float salary;
+struct Employee* next;
+};
+// Function to insert an employee into the linked list
+void insertEmployee(struct Employee** head, char name[], char designation[], float salary) {
+struct Employee* newEmployee = (struct Employee*)malloc(sizeof(struct Employee));
+strcpy(newEmployee->name, name);
+strcpy(newEmployee->designation, designation);
+newEmployee->salary = salary;
+newEmployee->next = NULL;
+if (*head == NULL) {
+*head = newEmployee;
+} else {
+struct Employee* current = *head;
+while (current->next != NULL) {
+current = current->next;
+}
+current->next = newEmployee;
+}
+}
+// Function to search for an employee by name and display their details
+void searchEmployee(struct Employee* head, char name[]) {
+struct Employee* current = head;
+int found = 0;
+while (current != NULL) {
+if (strcmp(current->name, name) == 0) {
+printf("Employee found:\n");
+printf("Name: %s\n", current->name);
+printf("Designation: %s\n", current->designation);
+printf("Salary: %.2f\n", current->salary);
+found = 1;
+break;
+}
+current = current->next;
+}
+if (!found) {
+printf("Employee with name %s not found.\n", name);
+}
+}
+// Function to calculate the average salary of employees with the designation "Manager"
+float calculateAverageManagerSalary(struct Employee* head) {
+int count = 0;
+float totalSalary = 0.0;
+struct Employee* current = head;
+while (current != NULL) {
+if (strcmp(current->designation, "Manager") == 0) {
+totalSalary += current->salary;
+count++;
+}
+current = current->next;
+}
+if (count > 0) {
+return totalSalary / count;
+} else {
+return 0.0;
+}
+}
+int main() {
+struct Employee* head = NULL;
+int N;
+printf("Enter the number of employees (N): ");
+scanf("%d", &N);
+for (int i = 0; i < N; i++) {
+char name[50], designation[50];
+float salary;
+printf("\nEnter details for Employee %d:\n", i + 1);
+printf("Name: ");
+scanf("%s", name);
+printf("Designation: ");
+scanf("%s", designation);
+printf("Salary: ");
+scanf("%f", &salary);
+insertEmployee(&head, name, designation, salary);
+}
+char searchName[50];
+printf("\nEnter the name of the employee to search: ");
+scanf("%s", searchName);
+searchEmployee(head, searchName);
+float averageSalary = calculateAverageManagerSalary(head);
+printf("\nAverage salary of Managers: %.2f\n", averageSalary);
+return 0;
+}

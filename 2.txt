@@ -1,0 +1,66 @@
+2. Consider two liked list A and B in sorted order. Write a program to merge the linked list A and B
+such that the final list C is in sorted order.
+
+#include <stdio.h>
+#include <stdlib.h>
+// Node structure for a linked list
+struct Node {
+int data;
+struct Node* next;
+};
+// Function to insert a new node at the end of a linked list
+void insertNode(struct Node** head, int data) {
+struct Node* newNode = (struct Node*)malloc(sizeof(struct Node));
+newNode->data = data;
+newNode->next = NULL;
+if (*head == NULL) {
+*head = newNode;
+} else {
+struct Node* temp = *head;
+while (temp->next != NULL) {
+temp = temp->next;
+}
+temp->next = newNode;
+}
+}
+// Function to merge two sorted linked lists A and B into a new sorted list C
+struct Node* mergeSortedLists(struct Node* A, struct Node* B) {
+struct Node* result = NULL;
+// Base cases
+if (A == NULL) return B;
+if (B == NULL) return A;
+// Choose the smaller value and recur
+if (A->data <= B->data) {
+result = A;
+result->next = mergeSortedLists(A->next, B);
+} else {
+result = B;
+result->next = mergeSortedLists(A, B->next);
+}
+return result;
+}
+// Function to print a linked list
+void printList(struct Node* head) {
+while (head != NULL) {
+printf("%d ", head->data);
+head = head->next;
+}
+printf("\n");
+}
+int main() {
+// Sample linked lists A and B
+struct Node* A = NULL;
+struct Node* B = NULL;
+insertNode(&A, 1);
+insertNode(&A, 3);
+insertNode(&A, 5);
+insertNode(&B, 2);
+insertNode(&B, 4);
+insertNode(&B, 6);
+// Merge the linked lists A and B into a new sorted list C
+struct Node* C = mergeSortedLists(A, B);
+// Print the merged list C
+printf("Merged Sorted List: ");
+printList(C);
+return 0;
+}

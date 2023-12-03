@@ -1,0 +1,35 @@
+OS2. Create two threads in a main program, let the first thread execute a function to display a message
+namely ”this is thread one” , similarly let the second thread displays ”this is thread two”.
+#include <stdio.h>
+#include <pthread.h>
+// Function to be executed by the first thread
+void *threadOneFunction(void *arg) {
+ // Display a message from thread one
+ printf("This is thread one\n");
+ // Exit the thread
+ pthread_exit(NULL);
+}
+// Function to be executed by the second thread
+void *threadTwoFunction(void *arg) {
+ // Display a message from thread two
+ printf("This is thread two\n");
+ // Exit the thread
+ pthread_exit(NULL);
+}
+int main() {
+ pthread_t threadOne, threadTwo; // Thread identifiers
+ // Create the first thread
+ if (pthread_create(&threadOne, NULL, threadOneFunction, NULL) != 0) {
+ fprintf(stderr, "Error creating thread one\n");
+ return 1;
+ }
+ // Create the second thread
+ if (pthread_create(&threadTwo, NULL, threadTwoFunction, NULL) != 0) {
+ fprintf(stderr, "Error creating thread two\n");
+ return 1;
+ }
+ // Wait for both threads to finish
+ pthread_join(threadOne, NULL);
+ pthread_join(threadTwo, NULL);
+ return 0;
+} 

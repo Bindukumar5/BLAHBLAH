@@ -1,0 +1,109 @@
+6. WAP to implement stack operations PUSH and POP using 2 Queues.
+#include <stdio.h>
+#include <stdlib.h>
+// Structure to represent a node in a queue
+struct QueueNode {
+ int data;
+ struct QueueNode* next;
+};
+// Structure to represent a queue
+struct Queue {
+ struct QueueNode* front;
+ struct QueueNode* rear;
+};
+// Function to initialize a queue
+struct Queue* initializeQueue() {
+ struct Queue* queue = (struct Queue*)malloc(sizeof(struct Queue));
+ queue->front = queue->rear = NULL;
+ return queue;
+}
+// Function to check if a queue is empty
+int isEmpty(struct Queue* queue) {
+ return (queue->front == NULL);
+}
+// Function to enqueue an element into a queue
+void enqueue(struct Queue* queue, int data) {
+ struct QueueNode* newNode = (struct QueueNode*)malloc(sizeof(struct QueueNode));
+ newNode->data = data;
+ newNode->next = NULL;
+ if (isEmpty(queue)) {
+ queue->front = queue->rear = newNode;
+ } else {
+ queue->rear->next = newNode;
+ queue->rear = newNode;
+ }
+}
+// Function to dequeue an element from a queue
+int dequeue(struct Queue* queue) {
+ if (isEmpty(queue)) {
+ printf("Queue is empty\n");
+ return -1; // Invalid value to indicate an empty queue
+ }
+ struct QueueNode* temp = queue->front;
+ int data = temp->data;
+ if (queue->front == queue->rear) {
+ // Only one element in the queue
+ queue->front = queue->rear = NULL;
+ } else {
+ queue->front = temp->next;
+ }
+ free(temp);
+ return data;
+}
+// Function to implement stack using two queues
+struct Stack {
+ struct Queue* q1;
+ struct Queue* q2;
+};
+// Function to initialize a stack
+struct Stack* initializeStack() {
+ struct Stack* stack = (struct Stack*)malloc(sizeof(struct Stack));
+ stack->q1 = initializeQueue();
+ stack->q2 = initializeQueue();
+ return stack;
+}
+// Function to push an element onto the stack
+void push(struct Stack* stack, int data) {
+ // Enqueue the new element to the non-empty queue
+ if (!isEmpty(stack->q1)) {
+ enqueue(stack->q1, data);
+ } else {
+ enqueue(stack->q2, data);
+ }
+}
+// Function to pop an element from the stack
+int pop(struct Stack* stack) {
+ // Dequeue all elements from the non-empty queue except the last one
+ struct Queue* nonEmptyQueue = isEmpty(stack->q1) ? stack->q2 : stack->q1;
+ struct Queue* emptyQueue = isEmpty(stack->q1) ? stack->q1 : stack->q2;
+ if (isEmpty(nonEmptyQueue)) {
+ printf("Stack is empty\n");
+ return -1; // Invalid value to indicate an empty stack
+ }
+ while (nonEmptyQueue->front->next != NULL) {
+ enqueue(emptyQueue, dequeue(nonEmptyQueue));
+ }
+ // Dequeue the last element from the non-empty queue
+ int poppedData = dequeue(nonEmptyQueue);
+ return poppedData;
+}
+int main() {
+ // Initialize a stack using two queues
+ struct Stack* stack = initializeStack();
+ // Push elements onto the stack
+ push(stack, 1);
+ push(stack, 2);
+ push(stack, 3);
+ // Pop elements from the stack
+ int popped1 = pop(stack);
+ int popped2 = pop(stack);
+ int popped3 = pop(stack);
+ // Print the popped elements
+ printf("Popped from stack: %d, %d, %d\n", popped1, popped2, popped3);
+ // Free the memory allocated for the stack
+ free(stack->q1);
+ free(stack->q2);
+ free(stack);
+ return 0;
+}
+
